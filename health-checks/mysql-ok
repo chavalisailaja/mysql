@@ -1,0 +1,10 @@
+#!/bin/bash
+
+MYSQL_VERSION=`mysql -u admin -N -e "SELECT VERSION();" 2>/dev/null`
+if [ "$MYSQL_VERSION" != "" ] ; then
+    echo "OK. MySQL version: ${MYSQL_VERSION}."
+    exit 0
+fi
+
+echo "Error. MySQL is not running."
+exit 2
