@@ -23,7 +23,6 @@ RUN rm -f /etc/phpmyadmin/config-db.php
 
 ADD ./supervisor/mysql.conf /etc/supervisor/conf.d/
 ADD ./supervisor/register_in_service_discovery.conf /etc/supervisor/conf.d/
-ADD ./health-checks/mysql-ok /opt/microservice/health-checks/
 
 # Add MySQL configuration.
 ADD my.cnf /etc/mysql/conf.d/my.cnf
