@@ -2,10 +2,17 @@ FROM microservice_php
 MAINTAINER Cerebro <cerebro@ganymede.eu>, based on tutumcloud/tutum-docker-mysql
 
 ENV MYSQL_APT_GET_UPDATE_DATE 2015-02-24
+
+# Prepare MySQL-5.7 sources list.
+RUN echo "deb http://repo.mysql.com/apt/ubuntu/ trusty mysql-apt-config" > /etc/apt/sources.list.d/mysql.list
+RUN echo "deb http://repo.mysql.com/apt/ubuntu/ trusty mysql-5.7" >> /etc/apt/sources.list.d/mysql.list
+RUN echo "deb-src http://repo.mysql.com/apt/ubuntu/ trusty mysql-5.7" >> /etc/apt/sources.list.d/mysql.list
 RUN apt-get update
 
 # Install MySQL.
-RUN apt-get install -y mysql-server-5.6
+RUN apt-get install -y libaio1 libaio-dev
+RUN apt-get install -y --force-yes mysql-server-5.7
+
 # Remove pre-installed database.
 RUN rm -rf /var/lib/mysql/*
 
@@ -17,6 +24,7 @@ RUN sed -ri 's/^session.gc_maxlifetime.*/session.gc_maxlifetime = 43200/g' /etc/
 RUN sed -ri 's/^post_max_size.*/post_max_size = 128M/g' /etc/php5/apache2/php.ini
 RUN sed -ri 's/^upload_max_filesize.*/upload_max_filesize = 128M/g' /etc/php5/apache2/php.ini
 ADD phpmyadmin_longer_session.php /etc/phpmyadmin/conf.d/
+
 # Disable phpMyAdmin features that require own configuration database (which doesn't exist).
 # https://wiki.phpmyadmin.net/pma/Configuration_storage
 RUN rm -f /etc/phpmyadmin/config-db.php
