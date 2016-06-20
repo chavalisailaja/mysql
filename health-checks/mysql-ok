@@ -1,6 +1,6 @@
 #!/bin/bash
 
-MYSQL_VERSION=`mysql -u admin -N -e "SELECT VERSION();" 2>/dev/null`
+MYSQL_VERSION=`mysql -u healthcheck -N -e "SELECT VERSION();" 2>/dev/null`
 if [ "$MYSQL_VERSION" != "" ] ; then
     echo "OK. MySQL version: ${MYSQL_VERSION}."
     exit 0

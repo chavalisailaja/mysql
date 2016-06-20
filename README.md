@@ -3,7 +3,7 @@
 `mysql` service contains armadized MySQL server accompanied with [phpMyAdmin](http://www.phpmyadmin.net) interface
 configured to access it.
 
-
+:warning: Due to apparmor policy issue MySQL container will not initialize on a host with MySQL server installed. [Related Issue](https://github.com/docker/docker/issues/7512)
 # Building and running the service.
 
     armada build mysql
@@ -25,4 +25,5 @@ There will be one MySQL user created: `root` with password `groovy`. If you want
 it with environment variable like this:
 
     armada run mysql -v /var/opt/mysql-storage:/var/lib/mysql -e "MYSQL_ROOT_PASSWORD=secret!"
+
 
