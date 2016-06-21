@@ -16,8 +16,8 @@ done
 
 mysql -u root -e "CREATE USER 'root'@'%' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}'"
 mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION"
-mysql -u root -e "UPDATE mysql.user SET password = PASSWORD('${MYSQL_ROOT_PASSWORD}') WHERE user = 'root'"
-mysql -u root -e "UPDATE mysql.user SET user = 'admin' WHERE user = ''"
+mysql -u root -e "CREATE USER 'healthcheck'@'localhost'"
+mysql -u root -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('${MYSQL_ROOT_PASSWORD}')"
 
 echo "=> Done!"
 mysqladmin -u root shutdown
