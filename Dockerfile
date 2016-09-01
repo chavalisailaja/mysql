@@ -3,15 +3,22 @@ MAINTAINER Cerebro <cerebro@ganymede.eu>, based on tutumcloud/tutum-docker-mysql
 
 ENV MYSQL_APT_GET_UPDATE_DATE 2015-02-24
 
-# Prepare MySQL-5.7 sources list.
-RUN echo "deb http://repo.mysql.com/apt/ubuntu/ trusty mysql-apt-config" > /etc/apt/sources.list.d/mysql.list
-RUN echo "deb http://repo.mysql.com/apt/ubuntu/ trusty mysql-5.7" >> /etc/apt/sources.list.d/mysql.list
-RUN echo "deb-src http://repo.mysql.com/apt/ubuntu/ trusty mysql-5.7" >> /etc/apt/sources.list.d/mysql.list
+RUN wget http://downloads.mysql.com/archives/get/file/mysql-server_5.7.11-1ubuntu14.04_amd64.deb -O /tmp/server.deb && \
+    wget http://downloads.mysql.com/archives/get/file/mysql-community-server_5.7.11-1ubuntu14.04_amd64.deb -O /tmp/community_server.deb && \
+    wget http://downloads.mysql.com/archives/get/file/mysql-common_5.7.11-1ubuntu14.04_amd64.deb -O /tmp/common.deb && \
+    wget http://downloads.mysql.com/archives/get/file/mysql-client_5.7.11-1ubuntu14.04_amd64.deb -O /tmp/client.deb && \
+    wget http://downloads.mysql.com/archives/get/file/mysql-community-client_5.7.11-1ubuntu14.04_amd64.deb -O /tmp/community_client.deb
+
 RUN apt-get update
 
 # Install MySQL.
-RUN apt-get install -y libaio1 libaio-dev
-RUN apt-get install -y --force-yes mysql-server-5.7
+RUN apt-get install -y libaio1 libaio-dev libmecab2 apparmor
+
+RUN dpkg -i /tmp/common.deb && \
+    dpkg -i /tmp/community_client.deb && \
+    dpkg -i /tmp/client.deb && \
+    dpkg -i /tmp/community_server.deb && \
+    dpkg -i /tmp/server.deb
 
 # Remove pre-installed database.
 RUN rm -rf /var/lib/mysql/*
