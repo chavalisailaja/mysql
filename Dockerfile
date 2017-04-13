@@ -2,17 +2,18 @@ FROM microservice_php
 MAINTAINER Cerebro <cerebro@ganymede.eu>, based on tutumcloud/tutum-docker-mysql
 
 ENV MYSQL_APT_GET_UPDATE_DATE 2015-02-24
+ENV MYSQL_VERSION=5.7.13
 
-RUN wget http://downloads.mysql.com/archives/get/file/mysql-server_5.7.11-1ubuntu14.04_amd64.deb -O /tmp/server.deb && \
-    wget http://downloads.mysql.com/archives/get/file/mysql-community-server_5.7.11-1ubuntu14.04_amd64.deb -O /tmp/community_server.deb && \
-    wget http://downloads.mysql.com/archives/get/file/mysql-common_5.7.11-1ubuntu14.04_amd64.deb -O /tmp/common.deb && \
-    wget http://downloads.mysql.com/archives/get/file/mysql-client_5.7.11-1ubuntu14.04_amd64.deb -O /tmp/client.deb && \
-    wget http://downloads.mysql.com/archives/get/file/mysql-community-client_5.7.11-1ubuntu14.04_amd64.deb -O /tmp/community_client.deb
+RUN wget http://downloads.mysql.com/archives/get/file/mysql-server_${MYSQL_VERSION}-1ubuntu16.04_amd64.deb -O /tmp/server.deb && \
+    wget http://downloads.mysql.com/archives/get/file/mysql-community-server_${MYSQL_VERSION}-1ubuntu16.04_amd64.deb -O /tmp/community_server.deb && \
+    wget http://downloads.mysql.com/archives/get/file/mysql-common_${MYSQL_VERSION}-1ubuntu16.04_amd64.deb -O /tmp/common.deb && \
+    wget http://downloads.mysql.com/archives/get/file/mysql-client_${MYSQL_VERSION}-1ubuntu16.04_amd64.deb -O /tmp/client.deb && \
+    wget http://downloads.mysql.com/archives/get/file/mysql-community-client_${MYSQL_VERSION}-1ubuntu16.04_amd64.deb -O /tmp/community_client.deb
 
 RUN apt-get update
 
 # Install MySQL.
-RUN apt-get install -y libaio1 libaio-dev libmecab2 apparmor
+RUN apt-get install -y libaio1 libaio-dev libmecab2 apparmor libnuma1
 
 RUN dpkg -i /tmp/common.deb && \
     dpkg -i /tmp/community_client.deb && \
@@ -27,9 +28,9 @@ RUN rm -rf /var/lib/mysql/*
 RUN apt-get install -y phpmyadmin
 RUN ln -s /etc/phpmyadmin/apache.conf /etc/apache2/sites-enabled/phpmyadmin.conf
 RUN mkdir -p /opt/www && ln -s /usr/share/phpmyadmin /opt/www/www
-RUN sed -ri 's/^session.gc_maxlifetime.*/session.gc_maxlifetime = 43200/g' /etc/php5/apache2/php.ini
-RUN sed -ri 's/^post_max_size.*/post_max_size = 128M/g' /etc/php5/apache2/php.ini
-RUN sed -ri 's/^upload_max_filesize.*/upload_max_filesize = 128M/g' /etc/php5/apache2/php.ini
+RUN sed -ri 's/^session.gc_maxlifetime.*/session.gc_maxlifetime = 43200/g' /etc/php/5.6/apache2/php.ini
+RUN sed -ri 's/^post_max_size.*/post_max_size = 128M/g' /etc/php/5.6/apache2/php.ini
+RUN sed -ri 's/^upload_max_filesize.*/upload_max_filesize = 128M/g' /etc/php/5.6/apache2/php.ini
 ADD phpmyadmin_longer_session.php /etc/phpmyadmin/conf.d/
 
 # Disable phpMyAdmin features that require own configuration database (which doesn't exist).
