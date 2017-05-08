@@ -25,7 +25,7 @@ RUN dpkg -i /tmp/common.deb && \
 RUN rm -rf /var/lib/mysql/*
 
 # Install phpMyAdmin.
-RUN apt-get install -y phpmyadmin
+RUN DEBIAN_FRONTEND='noninteractive' apt-get install -y phpmyadmin
 RUN ln -s /etc/phpmyadmin/apache.conf /etc/apache2/sites-enabled/phpmyadmin.conf
 RUN mkdir -p /opt/www && ln -s /usr/share/phpmyadmin /opt/www/www
 RUN sed -ri 's/^session.gc_maxlifetime.*/session.gc_maxlifetime = 43200/g' /etc/php/5.6/apache2/php.ini
