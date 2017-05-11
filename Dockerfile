@@ -40,11 +40,10 @@ RUN rm -f /etc/phpmyadmin/config-db.php
 ADD ./supervisor/mysql.conf /etc/supervisor/conf.d/
 ADD ./supervisor/register_in_service_discovery.conf /etc/supervisor/conf.d/
 
-# Add MySQL configuration.
-ADD my.cnf /etc/mysql/conf.d/my.cnf
-RUN chmod 644 /etc/mysql/conf.d/my.cnf
-
 ADD . /opt/mysql
+
+## Add MySQL configuration
+RUN cat /opt/mysql/my.cnf >> /etc/mysql/my.cnf
 RUN chmod 755 /opt/mysql/*.sh
 
 VOLUME ["/var/lib/mysql"]
