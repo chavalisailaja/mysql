@@ -10,22 +10,20 @@ RUN wget http://downloads.mysql.com/archives/get/file/mysql-server_${MYSQL_VERSI
     wget http://downloads.mysql.com/archives/get/file/mysql-client_${MYSQL_VERSION}-1ubuntu16.04_amd64.deb -O /tmp/client.deb && \
     wget http://downloads.mysql.com/archives/get/file/mysql-community-client_${MYSQL_VERSION}-1ubuntu16.04_amd64.deb -O /tmp/community_client.deb
 
+RUN LC_ALL=C.UTF-8 add-apt-repository -y ppa:nijel/phpmyadmin
 RUN apt-get update
-
-# Install MySQL.
 RUN apt-get install -y libaio1 libaio-dev libmecab2 apparmor libnuma1
 
-RUN dpkg -i /tmp/common.deb && \
-    dpkg -i /tmp/community_client.deb && \
-    dpkg -i /tmp/client.deb && \
-    dpkg -i /tmp/community_server.deb && \
-    dpkg -i /tmp/server.deb
+RUN cd /tmp && dpkg -i common.deb community_client.deb client.deb community_server.deb server.deb && rm *.deb
 
 # Remove pre-installed database.
 RUN rm -rf /var/lib/mysql/*
 
-# Install phpMyAdmin.
-RUN DEBIAN_FRONTEND='noninteractive' apt-get install -y phpmyadmin
+RUN echo "phpmyadmin phpmyadmin/internal/skip-preseed boolean true" | debconf-set-selections
+RUN echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect" | debconf-set-selections
+RUN echo "phpmyadmin phpmyadmin/dbconfig-install boolean false" | debconf-set-selections
+RUN apt-get install -y phpmyadmin
+
 RUN ln -s /etc/phpmyadmin/apache.conf /etc/apache2/sites-enabled/phpmyadmin.conf
 RUN mkdir -p /opt/www && ln -s /usr/share/phpmyadmin /opt/www/www
 RUN sed -ri 's/^session.gc_maxlifetime.*/session.gc_maxlifetime = 43200/g' /etc/php/5.6/apache2/php.ini
@@ -37,9 +35,7 @@ ADD phpmyadmin_longer_session.php /etc/phpmyadmin/conf.d/
 # https://wiki.phpmyadmin.net/pma/Configuration_storage
 RUN rm -f /etc/phpmyadmin/config-db.php
 
-ADD ./supervisor/mysql.conf /etc/supervisor/conf.d/
-ADD ./supervisor/register_in_service_discovery.conf /etc/supervisor/conf.d/
-
+ADD ./supervisor/* /etc/supervisor/conf.d/
 ADD . /opt/mysql
 
 ## Add MySQL configuration
