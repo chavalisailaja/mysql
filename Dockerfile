@@ -1,14 +1,14 @@
 FROM microservice_php
-MAINTAINER Cerebro <cerebro@ganymede.eu>, based on tutumcloud/tutum-docker-mysql
+MAINTAINER Cerebro <cerebro@ganymede.eu>, based on https://github.com/docker-library/mysql/
 
-ENV MYSQL_APT_GET_UPDATE_DATE 2015-02-24
-ENV MYSQL_VERSION=5.7.13
+ENV MYSQL_APT_GET_UPDATE_DATE 2017-06-16
+ENV MYSQL_VERSION=5.7.17
 
-RUN wget http://downloads.mysql.com/archives/get/file/mysql-server_${MYSQL_VERSION}-1ubuntu16.04_amd64.deb -O /tmp/server.deb && \
-    wget http://downloads.mysql.com/archives/get/file/mysql-community-server_${MYSQL_VERSION}-1ubuntu16.04_amd64.deb -O /tmp/community_server.deb && \
-    wget http://downloads.mysql.com/archives/get/file/mysql-common_${MYSQL_VERSION}-1ubuntu16.04_amd64.deb -O /tmp/common.deb && \
-    wget http://downloads.mysql.com/archives/get/file/mysql-client_${MYSQL_VERSION}-1ubuntu16.04_amd64.deb -O /tmp/client.deb && \
-    wget http://downloads.mysql.com/archives/get/file/mysql-community-client_${MYSQL_VERSION}-1ubuntu16.04_amd64.deb -O /tmp/community_client.deb
+RUN wget http://downloads.mysql.com/archives/get/file/mysql-server_${MYSQL_VERSION}-1ubuntu${DISTRIB_RELEASE}_amd64.deb -O /tmp/server.deb && \
+    wget http://downloads.mysql.com/archives/get/file/mysql-community-server_${MYSQL_VERSION}-1ubuntu${DISTRIB_RELEASE}_amd64.deb -O /tmp/community_server.deb && \
+    wget http://downloads.mysql.com/archives/get/file/mysql-common_${MYSQL_VERSION}-1ubuntu${DISTRIB_RELEASE}_amd64.deb -O /tmp/common.deb && \
+    wget http://downloads.mysql.com/archives/get/file/mysql-client_${MYSQL_VERSION}-1ubuntu${DISTRIB_RELEASE}_amd64.deb -O /tmp/client.deb && \
+    wget http://downloads.mysql.com/archives/get/file/mysql-community-client_${MYSQL_VERSION}-1ubuntu${DISTRIB_RELEASE}_amd64.deb -O /tmp/community_client.deb
 
 RUN apt-get update
 
@@ -23,6 +23,12 @@ RUN dpkg -i /tmp/common.deb && \
 
 # Remove pre-installed database.
 RUN rm -rf /var/lib/mysql/*
+
+
+# comment out a few problematic configuration values
+# don't reverse lookup hostnames, they are usually another container
+RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/mysql/mysql.conf.d/mysqld.cnf \
+&& echo '[mysqld]\nskip-host-cache\nskip-name-resolve' > /etc/mysql/conf.d/docker.cnf
 
 # Install phpMyAdmin.
 RUN DEBIAN_FRONTEND='noninteractive' apt-get install -y phpmyadmin
