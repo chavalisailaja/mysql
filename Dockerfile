@@ -42,6 +42,7 @@ RUN rm -f /etc/phpmyadmin/config-db.php
 
 ADD ./supervisor/* /etc/supervisor/conf.d/
 ADD . /opt/mysql
+RUN chmod +x /opt/mysql/hooks
 
 ## Add MySQL configuration
 RUN cat /opt/mysql/my.cnf >> /etc/mysql/my.cnf
