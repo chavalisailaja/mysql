@@ -1,9 +1,6 @@
 # mysql
+[![Build Status](https://travis-ci.com/chavalisailaja/mysql.svg?branch=master)](https://travis-ci.com/chavalisailaja/mysql)
 
-`mysql` service contains armadized MySQL server accompanied with [phpMyAdmin](http://www.phpmyadmin.net) interface
-configured to access it.
-
-:warning: Due to apparmor policy issue MySQL container will not initialize on a host with MySQL server installed. [Related Issue](https://github.com/docker/docker/issues/7512)
 # Building and running the service.
 
     armada build mysql
